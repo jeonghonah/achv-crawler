@@ -2,5 +2,6 @@
 Achievement system crawler
 
 # how to run
-(edit ./lib/account.js to user private login account)
+(edit ./lib/target.js to your target website)
+
 npm start
