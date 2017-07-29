@@ -1,0 +1,9 @@
+{
+  "name": "achv-crawler",
+  "version": "1.0.0",
+  "description": "TmaxData Achivement Crawler",
+  "main": "server.js",
+  "dependencies": {
+    "superagent": "^3.5.2"
+  }
+}
