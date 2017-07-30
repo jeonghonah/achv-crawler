@@ -113,6 +113,10 @@ function tmaxProcessAttend(text, query)
     console.log('redis connected');
   });
 
+  client.set("system", "['Hello, world', 'second ticket', 'Third ticket']", function(err, reply) {
+      console.log("redis " + reply + "(system)");
+  });
+
   client.set(res.name, resjson, function(err, reply) {
       console.log("redis " + reply + "(attend)");
   });
