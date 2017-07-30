@@ -4,8 +4,9 @@
   "description": "TmaxData Achivement Crawler",
   "main": "server.js",
   "dependencies": {
+    "achv-util": "^1.0.0",
     "jsdom": "^11.1.0",
-    "superagent": "^3.5.2",
-    "achv-util": "^1.0.0"
+    "redis": "^2.7.1",
+    "superagent": "^3.5.2"
   }
 }
