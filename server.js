@@ -117,9 +117,11 @@ function tmaxProcessAttend(text, query)
       console.log("redis " + reply + "(system)");
   });
 
-  client.set("weekly_news", "[\"나정호 gets 지각왕\", \"남윤수 gets 업적시스템 아버지\", \"나정호 gets 업적시스템 어머니\"]", function(err, reply) {
-      console.log("redis " + reply + "(system)");
-  });
+  client.set("weekly_news",
+      "[\"나정호 gets 지각왕\", \"남윤수 gets 업적시스템 아버지\", \"나정호 gets 업적시스템 어머니\", \"나정호 gets 업적덕후\"]",
+      function(err, reply) {
+        console.log("redis " + reply + "(system)");
+      });
 
   client.set("halloffame", "[\"Hall of Fame\", \"second ticket\", \"Third ticket\"]", function(err, reply) {
       console.log("redis " + reply + "(system)");
