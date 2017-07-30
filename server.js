@@ -23,10 +23,12 @@ function tmaxAttend(agent, tmax)
 {
   agent
     .get(tmax.loginpage)
-    .query({ userId: tmax.user.id, passwd: tmax.user.passwd })
+    .query({ userId: tmax.login.id, passwd: tmax.login.passwd })
     .end(function(err, res){
       tmax.query.retStDate = util.getPrevdate(8);
       tmax.query.retEdDate = util.getPrevdate(1);
+      tmax.query.countPerPage = 1000;
+      tmax.query.empNm = '나정호';
 
       console.log(tmax.query.retStDate);
       console.log(tmax.query.retEdDate);
@@ -35,6 +37,8 @@ function tmaxAttend(agent, tmax)
         .get(tmax.crawlpage)
         .query(tmax.query)
         .end(function(err, res) {
+          if (err)
+            console.log(err);
           tmaxProcessAttend(res.text, tmax);
         });
     });
@@ -56,16 +60,25 @@ function tmaxProcessAttend(text, tmax)
   var badcount = (text.match(/지각Ⅱ/g) || []).length;
   var goodcount = (text.match(/정상/g) || []).length;
 
-  /* Step2 : action */
+  /* Step2 : build info */
   var res = { name: tmax.query.empNm };
   res.weekly = { 
     start: tmax.query.retStDate,
     end: tmax.query.retEdDate,
     attend: {good: goodcount, bad: badcount}
   };
+  res.ever = {
+    attend: {good: goodcount, bad: badcount}
+  }
+  res.medal = { /* 0: disable, 1: enable */
+    "후계자" : 1,
+    "실장" : 1
+  }
+  res.notice = ["후계자 칭호를 얻었습니다.", "실장 칭호를 얻었습니다"];
   var resjson = JSON.stringify(res);
 
-  var client = redis.createClient(6379, '127.0.0.1'); //creates a new client
+  /* Step3 : action */
+  var client = redis.createClient(6379, '127.0.0.1');
   client.on('connect', function() {
     console.log('redis connected');
   });
