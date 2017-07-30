@@ -25,21 +25,39 @@ function tmaxAttend(agent, tmax)
     .get(tmax.loginpage)
     .query({ userId: tmax.login.id, passwd: tmax.login.passwd })
     .end(function(err, res){
-      tmax.query.retStDate = util.getPrevdate(8);
-      tmax.query.retEdDate = util.getPrevdate(1);
-      tmax.query.countPerPage = 1000;
-      tmax.query.empNm = '나정호';
-
-      console.log(tmax.query.retStDate);
-      console.log(tmax.query.retEdDate);
+      var query = {};
+      query.retStDate = util.getPrevdate(8);
+      query.retEdDate = util.getPrevdate(1);
+      query.countPerPage = 1000;
+      query.empNm = '나정호';
 
       agent
         .get(tmax.crawlpage)
-        .query(tmax.query)
+        .query(query)
         .end(function(err, res) {
           if (err)
             console.log(err);
-          tmaxProcessAttend(res.text, tmax);
+          tmaxProcessAttend(res.text, query);
+        });
+    });
+
+  agent
+    .get(tmax.loginpage)
+    .query({ userId: tmax.login.id, passwd: tmax.login.passwd })
+    .end(function(err, res){
+      var query = {};
+      query.retStDate = util.getPrevdate(8);
+      query.retEdDate = util.getPrevdate(1);
+      query.countPerPage = 1000;
+      query.empNm = '남윤수';
+
+      agent
+        .get(tmax.crawlpage)
+        .query(query)
+        .end(function(err, res) {
+          if (err)
+            console.log(err);
+          tmaxProcessAttend(res.text, query);
         });
     });
 }
@@ -50,7 +68,7 @@ function tmaxAttend(agent, tmax)
 const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
 
-function tmaxProcessAttend(text, tmax)
+function tmaxProcessAttend(text, query)
 {
   /* Step1 : parsing */
   const dom = new JSDOM(text);
@@ -61,20 +79,32 @@ function tmaxProcessAttend(text, tmax)
   var goodcount = (text.match(/정상/g) || []).length;
 
   /* Step2 : build info */
-  var res = { name: tmax.query.empNm };
+  var res = { name: query.empNm };
   res.weekly = { 
-    start: tmax.query.retStDate,
-    end: tmax.query.retEdDate,
+    start: query.retStDate,
+    end: query.retEdDate,
     attend: {good: goodcount, bad: badcount}
   };
   res.ever = {
     attend: {good: goodcount, bad: badcount}
   }
-  res.medal = { /* 0: disable, 1: enable */
-    "후계자" : 1,
-    "실장" : 1
+
+  if (res.name == "나정호") {
+    res.medal = { /* 0: disable, 1: enable */
+      "후계자" : 1,
+      "실장" : 1,
+      "Maestro" : 1
+    }
+    res.notice = ["후계자 칭호를 얻었습니다.", "실장 칭호를 얻었습니다", "Maestro 칭호를 얻었습니다."];
   }
-  res.notice = ["후계자 칭호를 얻었습니다.", "실장 칭호를 얻었습니다"];
+  else if (res.name == "남윤수") {
+    res.medal = { /* 0: disable, 1: enable */
+      "업적시스템의 아버지" : 1,
+      "Super rookie" : 1
+    }
+    res.notice = ["업적시스템의 아버지 칭호를 얻었습니다.", "Super rookie 칭호를 얻었습니다."];
+  }
+
   var resjson = JSON.stringify(res);
 
   /* Step3 : action */
